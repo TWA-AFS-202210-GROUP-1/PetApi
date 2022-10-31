@@ -73,10 +73,24 @@ namespace PetApi.Controllers
             }
         }
 
-        [HttpGet("findPetByType")]
-        public IActionResult FindPetByType([FromQuery] string type)
+        [HttpGet("findPetsByType")]
+        public IActionResult FindPetsByType([FromQuery] string type)
         {
             List<Pet> targetPets = pets.FindAll(i => i.Type == type);
+            if (targetPets.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(targetPets);
+            }
+        }
+
+        [HttpGet("findPetsByPriceRange")]
+        public IActionResult FindPetsByPriceRange([FromQuery] string start, [FromQuery] string end)
+        {
+            List<Pet> targetPets = pets.FindAll(i => i.Price >= int.Parse(start) && i.Price <= int.Parse(end));
             if (targetPets.Count == 0)
             {
                 return NotFound();
