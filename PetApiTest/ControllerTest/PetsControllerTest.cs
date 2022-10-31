@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Moq;
+using Newtonsoft.Json;
 using PetApi.Controllers;
 using PetApi.Models;
 using PetApi.Services;
@@ -11,6 +13,24 @@ namespace PetApiTest.ControllerTest;
 
 public class PetsControllerTest
 {
+    [Fact]
+    public async void Should_add_new_pet_to_system_successfully()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+
+        var pet = new Pet("TestTom", PetType.Cat, "blue", 150);
+
+        //when
+        var response = await httpClient.PostAsJsonAsync("api/pets", pet);
+        var responseContentString = await response.Content.ReadAsStringAsync();
+        var responseContent = JsonConvert.DeserializeObject<Pet>(responseContentString);
+
+        //then
+        Assert.Equal(pet.Name, responseContent.Name);
+    }
+
     [Fact]
     public void Should_return_all_pets_when_get_all_pets_given_pet_service()
     {

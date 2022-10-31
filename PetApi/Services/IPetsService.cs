@@ -5,6 +5,7 @@ namespace PetApi.Services;
 
 public interface IPetsService
 {
+    public Pet CreatePet(Pet pet);
     public IList<Pet> GetAllPets();
     public Pet? GetByName(string name);
     public bool DeleteByName(string name);

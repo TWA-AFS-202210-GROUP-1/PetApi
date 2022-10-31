@@ -6,13 +6,20 @@ using PetApi.Services;
 namespace PetApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/pets")]
     public class PetsController : ControllerBase
     {
         private IPetsService _petService;
         public PetsController(IPetsService petService)
         {
             _petService = petService;
+        }
+
+        [HttpPost]
+        public IActionResult CreatePet([FromBody]Pet pet)
+        {
+            var createdPet = _petService.CreatePet(pet);
+            return Created($"api/pets?name={createdPet.Name}", createdPet);
         }
 
         [HttpGet]

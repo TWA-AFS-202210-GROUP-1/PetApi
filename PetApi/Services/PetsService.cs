@@ -17,6 +17,12 @@ namespace PetApi.Services
             };
         }
 
+        public Pet CreatePet(Pet pet)
+        {
+            _pets.Add(pet);
+            return pet;
+        }
+
         public IList<Pet> GetAllPets()
         {
             return _pets;

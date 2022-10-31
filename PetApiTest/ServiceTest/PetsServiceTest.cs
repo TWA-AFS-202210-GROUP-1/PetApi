@@ -7,6 +7,19 @@ namespace PetApiTest.ServiceTest
     public class PetsServiceTest
     {
         [Fact]
+        public void Should_return_pet_when_create_pet_given_pet()
+        {
+            //given
+            var service = new PetsService();
+
+            //when
+            var result = service.CreatePet(new Pet("TestJack", PetType.Cat, "Black", 200));
+
+            //then
+            Assert.Equal("TestJack", result.Name);
+        }
+
+        [Fact]
         public void Should_return_pets_when_get_all_pets_given_no()
         {
             //given
