@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetApi.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,27 +27,63 @@ namespace PetApi.Controllers
     }
 
     [HttpGet("findPetByName")]
-    public Pet FindPetByName([FromQuery] string name)
+    public IActionResult FindPetByName([FromQuery] string name)
     {
-      return pets.First(pet => pet.Name.Equals(name));
+      try
+      {
+        var pet = pets.First(pet => pet.Name.Equals(name));
+
+        return Ok(pet);
+      }
+      catch (Exception e)
+      {
+        return NotFound(e.Message);
+      }
     }
 
-    [HttpGet("findPetByType")]
-    public Pet FindPetByType([FromQuery] string type)
+    [HttpGet("findPetsByType")]
+    public IActionResult FindPetsByType([FromQuery] string type)
     {
-      return pets.First(pet => pet.Type.Equals(type));
+      try
+      {
+        var foundPets = pets.Where(pet => pet.Type.Equals(type)).ToList();
+
+        return Ok(foundPets);
+      }
+      catch (Exception e)
+      {
+        return NotFound(e.Message);
+      }
     }
 
-    [HttpGet("findPetByColor")]
-    public Pet FindPetByColor([FromQuery] string color)
+    [HttpGet("findPetsByColor")]
+    public IActionResult FindPetsByColor([FromQuery] string color)
     {
-      return pets.First(pet => pet.Color.Equals(color));
+      try
+      {
+        var foundPets = pets.Where(pet => pet.Color.Equals(color)).ToList();
+
+        return Ok(foundPets);
+      }
+      catch (Exception e)
+      {
+        return NotFound(e.Message);
+      }
     }
 
-    [HttpGet("findPetByPriceRange/priceFrom{start}to{end}")]
-    public Pet FindPetByPriceRange([FromRoute] int start, [FromRoute] int end)
+    [HttpGet("findPetsByPriceRange/priceFrom{start}to{end}")]
+    public IActionResult FindPetsByPriceRange([FromRoute] int start, [FromRoute] int end)
     {
-      return pets.First(pet => pet.Price >= start && pet.Price <= end);
+      try
+      {
+        var foundPets = pets.Where(pet => pet.Price >= start && pet.Price <= end).ToList();
+
+        return Ok(foundPets);
+      }
+      catch (Exception e)
+      {
+        return NotFound(e.Message);
+      }
     }
 
     [HttpPut("changePetProperty")]

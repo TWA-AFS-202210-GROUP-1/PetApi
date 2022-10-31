@@ -17,8 +17,7 @@
 
     public override bool Equals(object? obj)
     {
-      var pet = obj as Pet;
-      return pet != null
+      return obj is Pet pet
              && Name.Equals(pet.Name)
              && Type.Equals(pet.Type)
              && Color.Equals(pet.Color)
