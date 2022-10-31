@@ -18,6 +18,12 @@ namespace PetApi.Controllers
             return pet;
         }
 
+        [HttpGet("getAllPets")]
+        public List<Pet> GetAllPets()
+        {
+            return pets;
+        }
+
         [HttpGet("findPetByName")]
         public Pet FindPetByName([FromQuery] string name)
         {

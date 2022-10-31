@@ -16,6 +16,7 @@ public class PetControllerTest
         //given
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
         /*
          * Method: post
          * uri: /api/addNewPet
@@ -43,6 +44,7 @@ public class PetControllerTest
         //given
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
         /*
          * Method: post
          * uri: /api/addNewPet
@@ -57,7 +59,7 @@ public class PetControllerTest
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
         await httpClient.PostAsync(requestUri: "/api/addNewPet", postBody);
         //when
-        var repsonse = await httpClient.GetAsync(requestUri: "api/getAllPets");
+        var repsonse = await httpClient.GetAsync(requestUri: "/api/getAllPets");
         //then
         repsonse.EnsureSuccessStatusCode();
         var responseBody = await repsonse.Content.ReadAsStringAsync();
@@ -71,6 +73,7 @@ public class PetControllerTest
         //given
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
         /*
          * Method: post
          * uri: /api/addNewPet
