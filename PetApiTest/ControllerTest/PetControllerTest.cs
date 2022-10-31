@@ -123,4 +123,28 @@ public class PetControllerTest
         // then
         Assert.Equal("NoContent", response.StatusCode.ToString());
     }
+
+    [Fact]
+    public async void Should_modify_the_price_of_a_pet()
+    {
+        // given
+        var application = new WebApplicationFactory<Program>();
+        var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync("api/deleteAllPets");
+        var petKitty = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
+        var serializeObjectPetKitty = JsonConvert.SerializeObject(petKitty);
+        var postBody = new StringContent(serializeObjectPetKitty, Encoding.UTF8, "application/json");
+        await httpClient.PostAsync("/api/addNewPet", postBody);
+
+        var modifiedPet = new Pet(name: "Kitty", type: "cat", color: "white", price: 700);
+        var serializeObjectPet = JsonConvert.SerializeObject(modifiedPet);
+        var modifiedPostBody = new StringContent(serializeObjectPet, Encoding.UTF8, "application/json");
+        //when
+        var responseMessage = await httpClient.PutAsync("api/modifyPetByNameAndPrice?Name=Kitty&&Price=700", modifiedPostBody);
+        // then
+        responseMessage.EnsureSuccessStatusCode();
+        var responseBody = await responseMessage.Content.ReadAsStringAsync();
+        var targetPet = JsonConvert.DeserializeObject<Pet>(responseBody);
+        Assert.Equal(modifiedPet, targetPet);
+    }
 }

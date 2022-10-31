@@ -47,5 +47,17 @@ namespace PetApi.Controllers
 
             return null;
         }
+
+        [HttpPut("modifyPetByNameAndPrice")]
+        public Pet? ModifyPetByNameAndPrice([FromQuery] string name, [FromQuery]int price, Pet modifiedPet)
+        {
+            foreach (var pet in pets.Where(pet => modifiedPet.Name == name))
+            {
+                pet.Price = price;
+                return pet;
+            }
+
+            return null;
+        }
     }
 }
