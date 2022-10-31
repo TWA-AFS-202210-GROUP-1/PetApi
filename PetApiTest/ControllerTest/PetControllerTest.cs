@@ -91,29 +91,36 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync("api/deleteAllPets");
-        var petHello = new Pet(name: "Hello", type: "dog", color: "white", price: 1000);
         var petKitty = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
-        var serializeObjectPetHello = JsonConvert.SerializeObject(petHello);
         var serializeObjectPetKitty = JsonConvert.SerializeObject(petKitty);
-        var postBodyHello = new StringContent(serializeObjectPetHello, Encoding.UTF8, "application/json");
         var postBodyKitty = new StringContent(serializeObjectPetKitty, Encoding.UTF8, "application/json");
-        await httpClient.PostAsync("/api/addNewPet", postBodyHello);
         await httpClient.PostAsync("/api/addNewPet", postBodyKitty);
         //when
         var deletePet = await httpClient.DeleteAsync("api/deleteBroughtPet?Name=Kitty");
         // then
-        deletePet.EnsureSuccessStatusCode();
         var responseDeletePet = await deletePet.Content.ReadAsStringAsync();
         var responseDeletePetBody = JsonConvert.DeserializeObject<Pet>(responseDeletePet);
         Assert.Equal(petKitty, responseDeletePetBody);
+        Assert.Equal("OK", deletePet.StatusCode.ToString());
 
         var deletedPet = await httpClient.GetAsync("api/getPetByName?Name=Kitty");
         Assert.Equal("NoContent", deletedPet.StatusCode.ToString());
+    }
 
-        var existPet = await httpClient.GetAsync("api/getPetByName?Name=Hello");
-        existPet.EnsureSuccessStatusCode();
-        var responseExistPet = await existPet.Content.ReadAsStringAsync();
-        var responseExistPetBody = JsonConvert.DeserializeObject<Pet>(responseExistPet);
-        Assert.Equal(petHello, responseExistPetBody);
+    [Fact]
+    public async void Should_return_null_when_can_not_find_delete_pet_name()
+    {
+        // given
+        var application = new WebApplicationFactory<Program>();
+        var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync("api/deleteAllPets");
+        var petKitty = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
+        var serializeObjectPetKitty = JsonConvert.SerializeObject(petKitty);
+        var postBodyKitty = new StringContent(serializeObjectPetKitty, Encoding.UTF8, "application/json");
+        await httpClient.PostAsync("/api/addNewPet", postBodyKitty);
+        //when
+        var response = await httpClient.DeleteAsync("api/deleteBroughtPet?Name=Hello");
+        // then
+        Assert.Equal("NoContent", response.StatusCode.ToString());
     }
 }
