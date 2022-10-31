@@ -59,4 +59,49 @@ public class PetsControllerTest
         //then
         Assert.True(result is NotFoundResult);
     }
+
+    [Fact]
+    public void Should_return_no_content_when_delete_pet_by_name_given_service_can_find_pet()
+    {
+        //given
+        var perServiceMock = new Mock<IPetsService>();
+        perServiceMock.Setup(_ => _.DeleteByName(It.IsAny<string>())).Returns(true);
+        var controller = new PetsController(perServiceMock.Object);
+
+        //when
+        var result = controller.DeleteByName("Tom");
+
+        //then
+        Assert.True(result is NoContentResult);
+    }
+
+    [Fact]
+    public void Should_return_not_found_when_delete_pet_by_name_given_service_can_not_find_pet()
+    {
+        //given
+        var perServiceMock = new Mock<IPetsService>();
+        perServiceMock.Setup(_ => _.DeleteByName(It.IsAny<string>())).Returns(false);
+        var controller = new PetsController(perServiceMock.Object);
+
+        //when
+        var result = controller.DeleteByName("Jack");
+
+        //then
+        Assert.True(result is NotFoundResult);
+    }
+
+    [Fact]
+    public void Should_return_pet_modified_found_when_modify_pet_price_given_service_can_not_find_pet()
+    {
+        //given
+        var perServiceMock = new Mock<IPetsService>();
+        perServiceMock.Setup(_ => _.ModifyPetPrice(It.IsAny<string>(), It.IsAny<PetPriceChangeDto>())).Returns(new Pet("Tom", PetType.Cat, "blue", 150));
+        var controller = new PetsController(perServiceMock.Object);
+
+        //when
+        var result = controller.ModifyPetPrice("Tome", new PetPriceChangeDto { Price = 150 });
+
+        //then
+        Assert.True(result is ObjectResult);
+    }
 }

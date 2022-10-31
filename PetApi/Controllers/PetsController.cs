@@ -33,5 +33,28 @@ namespace PetApi.Controllers
 
             return Ok(pet);
         }
+
+        [HttpDelete("{name}")]
+        public IActionResult DeleteByName([FromRoute] string name)
+        {
+            var hasBeenDelete = _petService.DeleteByName(name);
+            if (hasBeenDelete)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
+        }
+
+        public IActionResult ModifyPetPrice(string name, PetPriceChangeDto priceChange)
+        {
+            var pet = _petService.ModifyPetPrice(name, priceChange);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(pet);
+        }
     }
 }

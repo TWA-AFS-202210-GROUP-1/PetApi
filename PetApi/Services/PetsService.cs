@@ -26,5 +26,27 @@ namespace PetApi.Services
         {
             return _pets.FirstOrDefault(_ => _.Name.Equals(name));
         }
+
+        public bool DeleteByName(string name)
+        {
+            var pet = GetByName(name);
+            if (pet != null)
+            {
+                return _pets.Remove(pet);
+            }
+            
+            return false;
+        }
+
+        public Pet? ModifyPetPrice(string name, PetPriceChangeDto priceChange)
+        {
+            var pet = GetByName(name);
+            if (pet != null)
+            {
+                pet.Price = priceChange.Price;
+            }
+
+            return pet;
+        }
     }
 }
