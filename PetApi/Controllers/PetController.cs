@@ -66,5 +66,20 @@ namespace PetApi.Controllers
 
             return null;
         }
+
+        [HttpGet("getPetByType")]
+        public List<Pet> GetPetByType([FromQuery] string type)
+        {
+            List<Pet> pet_results = new List<Pet>();
+            for (int i = 0; i < pets.Count; i++)
+            {
+                if (pets[i].Type == type)
+                {
+                    pet_results.Add(pets[i]);
+                }
+            }
+
+            return pet_results;
+        }
     }
 }
