@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PetApi.Model;
+using System.Collections.Generic;
 
 namespace PetApi.Controllers
 {
@@ -7,10 +8,19 @@ namespace PetApi.Controllers
     [Route("api")]
     public class PetController
     {
+        private static List<Pet> pets = new List<Pet>();
         [HttpPost("addNewPet")]
         public Pet AddNewPet(Pet pet)
         {
+            pets.Add(pet);
             return pet;
         }
+
+        [HttpGet("getAllPets")]
+        public List<Pet> GetAllPets()
+        {
+            return pets;
+        }
+
     }
 }
