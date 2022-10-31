@@ -85,5 +85,12 @@ namespace PetApi.Controllers
             var pet = _petService.GetByColor(color);
             return Ok(pet);
         }
+
+        [HttpDelete("all")]
+        public IActionResult DeleteAll()
+        {
+            var pet = _petService.DeleteAll();
+            return NoContent();
+        }
     }
 }

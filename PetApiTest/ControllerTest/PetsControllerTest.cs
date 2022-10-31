@@ -1,9 +1,15 @@
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using PetApi.Controllers;
 using PetApi.Models;
 using PetApi.Services;
@@ -13,23 +19,6 @@ namespace PetApiTest.ControllerTest;
 
 public class PetsControllerTest
 {
-    [Fact]
-    public async void Should_add_new_pet_to_system_successfully()
-    {
-        //given
-        var app = new WebApplicationFactory<Program>();
-        var httpClient = app.CreateClient();
-
-        var pet = new Pet("TestTom", PetType.Dog, "blue", 150);
-        //when
-        var response = await httpClient.PostAsJsonAsync("api/pets", pet);
-        var responseContentString = await response.Content.ReadAsStringAsync();
-        var responseContent = JsonConvert.DeserializeObject<Pet>(responseContentString);
-
-        //then
-        Assert.Equal(pet.Name, responseContent.Name);
-    }
-
     [Fact]
     public void Should_return_all_pets_when_get_all_pets_given_pet_service()
     {
@@ -125,37 +114,120 @@ public class PetsControllerTest
     }
 
     [Fact]
+    public async void Should_add_new_pet_to_system_successfully()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+
+        var pet = new Pet("TestTom", PetType.Dog, "blue", 150);
+        var petString = SerializeObject(pet);
+        //when
+        var response = await httpClient.PostAsJsonAsync("api/pets", pet);
+        var responseContentString = await response.Content.ReadAsStringAsync();
+
+        //then
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(petString, responseContentString);
+    }
+
+    [Fact]
+    public async void Should_return_all_pet_when_get_by_type_given_cat()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+        var cat = new Pet("TestTom", PetType.Cat, "blue", 150);
+        var dog = new Pet("TestJack", PetType.Dog, "white", 100);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", cat);
+        await httpClient.PostAsJsonAsync("api/pets", dog);
+        var petString = SerializeObject(new List<Pet> { cat, dog });
+
+        //when
+        var response = await httpClient.GetAsync($"api/pets/all");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+
+        //then
+        Assert.Equal(petString, responseContentString);
+    }
+
+    [Fact]
+    public async void Should_return_tom_cat_when_get_by_type_given_cat()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+        var cat = new Pet("TestTom", PetType.Cat, "blue", 150);
+        var dog = new Pet("TestJack", PetType.Dog, "white", 100);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", cat);
+        await httpClient.PostAsJsonAsync("api/pets", dog);
+        var petString = SerializeObject(cat);
+
+        //when
+        var response = await httpClient.GetAsync($"api/pets/TestTom");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+
+        //then
+        Assert.Equal(petString, responseContentString);
+    }
+
+    [Fact]
     public async void Should_return_all_cat_when_get_by_type_given_cat()
     {
         //given
         var app = new WebApplicationFactory<Program>();
         var httpClient = app.CreateClient();
+        var cat = new Pet("TestTom", PetType.Cat, "blue", 150);
+        var dog = new Pet("TestJack", PetType.Dog, "white", 100);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", cat);
+        await httpClient.PostAsJsonAsync("api/pets", dog);
+        var petString = SerializeObject(new List<Pet> { cat });
 
         //when
         var response = await httpClient.GetAsync($"api/pets/type/{nameof(PetType.Cat)}");
         var responseContentString = await response.Content.ReadAsStringAsync();
-        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
 
         //then
-        Assert.Single(responseContent);
-        Assert.Equal("Tom", responseContent[0].Name);
+        Assert.Equal(petString, responseContentString);
     }
 
     [Fact]
-    public async void Should_return_1_pet_when_get_by_priceRange_given_80_110()
+    public async void Should_return_no_content_when_delete_by_name_given_name()
     {
         //given
         var app = new WebApplicationFactory<Program>();
         var httpClient = app.CreateClient();
+        var cat = new Pet("TestTom", PetType.Cat, "blue", 150);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", cat);
 
         //when
-        var response = await httpClient.GetAsync($"api/pets/price/from/80/to/100");
-        var responseContentString = await response.Content.ReadAsStringAsync();
-        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
+        var response = await httpClient.DeleteAsync($"api/pets/TestTom");
 
         //then
-        Assert.Single(responseContent);
-        Assert.Equal("Spike", responseContent[0].Name);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async void Should_return_1_pet_when_get_by_priceRange_given_120_160()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+        var pet = new Pet("TestTom", PetType.Dog, "blue", 150);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", pet);
+        var petString = SerializeObject(new List<Pet> { pet });
+
+        //when
+        var response = await httpClient.GetAsync("api/pets/price/from/120/to/160");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+
+        //then
+        Assert.Equal(petString, responseContentString);
     }
 
     [Fact]
@@ -164,14 +236,41 @@ public class PetsControllerTest
         //given
         var app = new WebApplicationFactory<Program>();
         var httpClient = app.CreateClient();
+        var pet = new Pet("TestTom", PetType.Dog, "blue", 150);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", pet);
+        var petString = SerializeObject(new List<Pet> { pet });
 
         //when
         var response = await httpClient.GetAsync($"api/pets/color/blue");
         var responseContentString = await response.Content.ReadAsStringAsync();
-        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
+
+        Assert.Equal(petString, responseContentString);
+    }
+
+    [Fact]
+    public async void Should_return_modified_pet_when_modify_given_cat()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+        var cat = new Pet("TestTom", PetType.Cat, "blue", 150);
+        await httpClient.DeleteAsync("api/pets/all");
+        await httpClient.PostAsJsonAsync("api/pets", cat);
+        var petString = SerializeObject(new Pet("TestTom", PetType.Cat, "blue", 100));
+        var patchDto = new PetPriceChangeDto() { Price = 100 };
+        var patchString = SerializeObject(patchDto);
+
+        //when
+        var response = await httpClient.PatchAsync("api/pets/TestTom", new StringContent(patchString, Encoding.UTF8, "application/json"));
+        var responseContentString = await response.Content.ReadAsStringAsync();
 
         //then
-        Assert.Single(responseContent);
-        Assert.Equal("Tom", responseContent[0].Name);
+        Assert.Equal(petString, responseContentString);
+    }
+
+    private static string SerializeObject(object obj)
+    {
+        return JsonConvert.SerializeObject(obj, new StringEnumConverter(new CamelCaseNamingStrategy()));
     }
 }

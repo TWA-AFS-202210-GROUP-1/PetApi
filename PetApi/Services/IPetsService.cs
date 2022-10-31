@@ -13,4 +13,5 @@ public interface IPetsService
     public IList<Pet>? GetByType(PetType name);
     public IList<Pet>? GetByPriceRange(double from, double to);
     public IList<Pet>? GetByColor(string color);
+    public bool DeleteAll();
 }

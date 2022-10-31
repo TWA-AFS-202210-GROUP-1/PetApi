@@ -11,11 +11,7 @@ namespace PetApi.Services
 
         public PetsService()
         {
-            _pets = new List<Pet>()
-            {
-                new ("Spike", PetType.Dog, "white", 100),
-                new ("Tom", PetType.Cat, "blue", 150),
-            };
+            _pets = new List<Pet>();
         }
 
         public Pet CreatePet(Pet pet)
@@ -69,6 +65,12 @@ namespace PetApi.Services
         public IList<Pet>? GetByColor(string color)
         {
             return _pets.Where(_ => _.Color.Equals(color, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        }
+
+        public bool DeleteAll()
+        {
+            _pets.Clear();
+            return true;
         }
     }
 }
