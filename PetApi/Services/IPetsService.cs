@@ -12,4 +12,5 @@ public interface IPetsService
     public Pet? ModifyPetPrice(string name, PetPriceChangeDto priceChange);
     public IList<Pet>? GetByType(PetType name);
     public IList<Pet>? GetByPriceRange(double from, double to);
+    public IList<Pet>? GetByColor(string color);
 }

@@ -157,4 +157,21 @@ public class PetsControllerTest
         Assert.Single(responseContent);
         Assert.Equal("Spike", responseContent[0].Name);
     }
+
+    [Fact]
+    public async void Should_return_1_pet_when_get_by_color_given_blue()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+
+        //when
+        var response = await httpClient.GetAsync($"api/pets/color/blue");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
+
+        //then
+        Assert.Single(responseContent);
+        Assert.Equal("Tom", responseContent[0].Name);
+    }
 }

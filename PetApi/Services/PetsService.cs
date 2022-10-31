@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PetApi.Models;
 
@@ -63,6 +64,11 @@ namespace PetApi.Services
         public IList<Pet>? GetByPriceRange(double from, double to)
         {
             return _pets.Where(_ => _.Price <= to && _.Price >= from).ToList();
+        }
+
+        public IList<Pet>? GetByColor(string color)
+        {
+            return _pets.Where(_ => _.Color.Equals(color, StringComparison.CurrentCultureIgnoreCase)).ToList();
         }
     }
 }

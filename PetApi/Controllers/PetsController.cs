@@ -78,5 +78,12 @@ namespace PetApi.Controllers
             var pet = _petService.GetByPriceRange(from, to);
             return Ok(pet);
         }
+
+        [HttpGet("color/{color}")]
+        public IActionResult GetByPriceRange([FromRoute] string color)
+        {
+            var pet = _petService.GetByColor(color);
+            return Ok(pet);
+        }
     }
 }
