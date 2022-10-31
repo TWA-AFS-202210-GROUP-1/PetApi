@@ -24,7 +24,7 @@ namespace PetApi.Controllers
         }
 
         [HttpGet("getPet")]
-        public Pet GetAllPets([FromQuery] string name)
+        public Pet GetPet([FromQuery] string name)
         {
             foreach (var pet in pets)
             {
@@ -35,6 +35,21 @@ namespace PetApi.Controllers
             }
 
             return null;
+        }
+
+        [HttpDelete("deletePet")]
+        public List<Pet> DeletePet([FromQuery] string name, string type, string color, string price)
+        {
+            for (int i = 0; i < pets.Count; i++)
+            {
+                if (pets[i].Name == name && pets[i].Type == type && pets[i].Color == color && pets[i].Price == price)
+                {
+                   pets.RemoveAt(i);
+                   return pets;
+                }
+            }
+
+            return pets;
         }
     }
 }

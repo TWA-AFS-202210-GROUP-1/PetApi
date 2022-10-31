@@ -119,12 +119,13 @@ namespace PetApi.Controllers
             var postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             await httpClient.PostAsync("/api/addNewPet", postBody);
             //when
-            var response = await httpClient.GetAsync("api/getAllPets");
+            var response = await httpClient.DeleteAsync("api/DeletePet/?name=Kitty&type=cat&color=white&price=1000");
             //then
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
-            var savedPet = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
-            Assert.Equal(pet, savedPet[0]);
+            var petsnow = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            List<Pet> emptypets = new List<Pet>();
+            Assert.Equal(emptypets, petsnow);
         }
     }
 }
