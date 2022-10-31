@@ -87,6 +87,7 @@ public class PetControllerTest
     [Fact]
     public async void Should_delete_brought_pet_of_system()
     {
+        // given
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync("api/deleteAllPets");
@@ -99,15 +100,20 @@ public class PetControllerTest
         await httpClient.PostAsync("/api/addNewPet", postBodyHello);
         await httpClient.PostAsync("/api/addNewPet", postBodyKitty);
         //when
-        var response = await httpClient.DeleteAsync("api/deleteBroughtPet?Name=Kitty");
+        var deletePet = await httpClient.DeleteAsync("api/deleteBroughtPet?Name=Kitty");
         // then
-        response.EnsureSuccessStatusCode();
-        var responseBody = await response.Content.ReadAsStringAsync();
-        var responsePet = JsonConvert.DeserializeObject<Pet>(responseBody);
+        deletePet.EnsureSuccessStatusCode();
+        var responseDeletePet = await deletePet.Content.ReadAsStringAsync();
+        var responseDeletePetBody = JsonConvert.DeserializeObject<Pet>(responseDeletePet);
+        Assert.Equal(petKitty, responseDeletePetBody);
 
         var deletedPet = await httpClient.GetAsync("api/getPetByName?Name=Kitty");
-
         Assert.Equal("NoContent", deletedPet.StatusCode.ToString());
-        Assert.Equal(petKitty, responsePet);
+
+        var existPet = await httpClient.GetAsync("api/getPetByName?Name=Hello");
+        existPet.EnsureSuccessStatusCode();
+        var responseExistPet = await existPet.Content.ReadAsStringAsync();
+        var responseExistPetBody = JsonConvert.DeserializeObject<Pet>(responseExistPet);
+        Assert.Equal(petHello, responseExistPetBody);
     }
 }
