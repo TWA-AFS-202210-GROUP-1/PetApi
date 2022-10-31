@@ -72,24 +72,15 @@ namespace PetApi.Controllers
         [HttpGet("findPetsByPriceRange/{minPrice}_{maxPrice}")]
         public List<Pet>? FindPetsByPriceRange([FromRoute] int minPrice, [FromRoute] int maxPrice)
         {
-            var finPets = new List<Pet>();
+            var findPetsByPriceRange = pets.FindAll(pet => pet.Price <= maxPrice && pet.Price >= minPrice);
+            return findPetsByPriceRange.Count == 0 ? null : findPetsByPriceRange;
+        }
 
-            foreach (var pet in pets)
-            {
-                if (pet.Price <= maxPrice && pet.Price >= minPrice)
-                {
-                    finPets.Add(pet);
-                }
-            }
-
-            if (finPets.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return finPets;
-            }
+        [HttpGet("findPetsByColor")]
+        public List<Pet>? FindPetsByColor([FromQuery] string color)
+        {
+            var findPetsByColor = pets.FindAll(pet => pet.Color == color);
+            return findPetsByColor.Count == 0 ? null : findPetsByColor;
         }
     }
 }
