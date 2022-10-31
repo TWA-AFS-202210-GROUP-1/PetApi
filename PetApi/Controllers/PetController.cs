@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetApi.Model;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +15,7 @@ namespace PetApi.Controllers
     public Pet AddNewPet(Pet pet)
     {
       pets.Add(pet);
+
       return pet;
     }
 

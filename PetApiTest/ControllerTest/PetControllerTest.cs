@@ -5,9 +5,10 @@ using System.Text;
 using Xunit;
 using PetApi.Model;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace PetApiTest.ControllerTest;
 
@@ -28,8 +29,8 @@ public class PetControllerTest
     // then
     response.EnsureSuccessStatusCode();
     var responseBody = await response.Content.ReadAsStringAsync();
-    var savedPet = JsonConvert.DeserializeObject<Pet>(responseBody);
-    Assert.Equal(pet, savedPet);
+    var returnedPet = JsonConvert.DeserializeObject<Pet>(responseBody);
+    Assert.Equal(pet, returnedPet);
   }
 
   [Fact]
@@ -39,17 +40,25 @@ public class PetControllerTest
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
     await httpClient.DeleteAsync("/api/deleteAllPets");
-    var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    var pets = new List<Pet>
+    {
+      new Pet("Kitty", "cat", "white", 1000),
+      new Pet("Hammer", "dog", "brown", 1500),
+    };
+    var serializedCatObject = JsonConvert.SerializeObject(pets[0]);
+    var serializedDogObject = JsonConvert.SerializeObject(pets[1]);
+    var catPostBody = new StringContent(serializedCatObject, Encoding.UTF8, "application/json");
+    var dogPostBody = new StringContent(serializedDogObject, Encoding.UTF8, "application/json");
+    await httpClient.PostAsync("/api/addNewPet", catPostBody);
+    await httpClient.PostAsync("/api/addNewPet", dogPostBody);
+
     // when
     var response = await httpClient.GetAsync("/api/getAllPets");
     // then
     response.EnsureSuccessStatusCode();
     var responseBody = await response.Content.ReadAsStringAsync();
     var allPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
-    Assert.Equal(pet, allPets[0]);
+    Assert.Equal(pets, allPets);
   }
 
   [Fact]
@@ -58,11 +67,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     // when
     var response = await httpClient.GetAsync($"/api/findPetByName?name={pet.Name}");
     // then
@@ -78,11 +84,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     // when
     var response = await httpClient.DeleteAsync("/api/deletePetByName?name=Kitty");
     // then
@@ -96,11 +99,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     var newPet = new Pet("Kitty", "cat", "white", 2000);
     var serializedNewPetObject = JsonConvert.SerializeObject(newPet);
     var newPostBody = new StringContent(serializedNewPetObject, Encoding.UTF8, "application/json");
@@ -119,11 +119,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     // when
     var response = await httpClient.GetAsync($"/api/findPetByType?type={pet.Type}");
     // then
@@ -139,11 +136,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     // when
     var response = await httpClient.GetAsync($"/api/findPetByColor?color={pet.Color}");
     // then
@@ -159,11 +153,8 @@ public class PetControllerTest
     // given
     var application = new WebApplicationFactory<Program>();
     var httpClient = application.CreateClient();
-    await httpClient.DeleteAsync("/api/deleteAllPets");
     var pet = new Pet("Kitty", "cat", "white", 1000);
-    var serializedObject = JsonConvert.SerializeObject(pet);
-    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
-    await httpClient.PostAsync("/api/addNewPet", postBody);
+    await CreateTestPet(httpClient, pet);
     // when
     var response = await httpClient.GetAsync($"/api/findPetByPriceRange/priceFrom0to2000");
     // then
@@ -171,5 +162,15 @@ public class PetControllerTest
     var responseBody = await response.Content.ReadAsStringAsync();
     var returnedPet = JsonConvert.DeserializeObject<Pet>(responseBody);
     Assert.Equal(pet, returnedPet);
+  }
+
+  private static async Task<string> CreateTestPet(HttpClient httpClient, Pet pet)
+  {
+    await httpClient.DeleteAsync("/api/deleteAllPets");
+    var serializedObject = JsonConvert.SerializeObject(pet);
+    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
+    await httpClient.PostAsync("/api/addNewPet", postBody);
+
+    return "Test pet created.";
   }
 }
