@@ -19,7 +19,19 @@ namespace PetApi.Controllers
         public IActionResult GetAll()
         {
             var pets = _petService.GetAllPets();
-            return new ObjectResult(pets);
+            return Ok(pets);
+        }
+
+        [HttpGet("{name}")]
+        public IActionResult GetByName([FromQuery]string name)
+        {
+            var pet = _petService.GetByName(name);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(pet);
         }
     }
 }

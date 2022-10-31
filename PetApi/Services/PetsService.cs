@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PetApi.Models;
 
 namespace PetApi.Services
@@ -19,6 +20,11 @@ namespace PetApi.Services
         public IList<Pet> GetAllPets()
         {
             return _pets;
+        }
+
+        public Pet? GetByName(string name)
+        {
+            return _pets.FirstOrDefault(_ => _.Name.Equals(name));
         }
     }
 }

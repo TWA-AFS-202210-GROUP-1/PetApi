@@ -6,4 +6,5 @@ namespace PetApi.Services;
 public interface IPetsService
 {
     public IList<Pet> GetAllPets();
+    public Pet? GetByName(string name);
 }
