@@ -8,26 +8,34 @@ namespace PetApi.Controllers
 {
     [ApiController]
     [Route("api")]
-    public class PetController
+    public class PetController : ControllerBase
     {
         private static List<Pet> pets = new List<Pet>();
         [HttpPost("addNewPet")]
-        public Pet AddNewPet(Pet pet)
+        public IActionResult AddNewPet(Pet pet)
         {
             pets.Add(pet);
-            return pet;
+            return Ok();
         }
 
         [HttpGet("getAllPets")]
-        public List<Pet> GetAllPets()
+        public IActionResult GetAllPets()
         {
-            return pets;
+            return Ok(pets);
         }
 
         [HttpGet("findPetByName")]
-        public Pet FindPetByName([FromQuery] string name)
+        public IActionResult FindPetByName([FromQuery] string name)
         {
-            return pets.FirstOrDefault(pet => pet.Name == name);
+            Pet pet = pets.FirstOrDefault(pet => pet.Name == name);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(pet);
+            }
         }
 
         [HttpDelete("deleteAllPets")]
@@ -36,5 +44,47 @@ namespace PetApi.Controllers
             pets.Clear();
         }
 
+        [HttpDelete("deletePetByName")]
+        public IActionResult DeletePetByName([FromQuery] string name)
+        {
+            Pet pet = pets.FirstOrDefault(pet => pet.Name == name);
+            if (pets.Remove(pet))
+            {
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPut("updatePetByName")]
+        public IActionResult UpdatePetByName([FromBody] Pet updatedPet)
+        {
+            Pet pet = pets.FirstOrDefault(pet => pet.Name == updatedPet.Name);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                pet.Price = updatedPet.Price;
+                return Ok();
+            }
+        }
+
+        [HttpGet("findPetByType")]
+        public IActionResult FindPetByType([FromQuery] string type)
+        {
+            List<Pet> targetPets = pets.FindAll(i => i.Type == type);
+            if (targetPets.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(targetPets);
+            }
+        }
     }
 }
