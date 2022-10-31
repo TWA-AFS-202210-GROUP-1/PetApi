@@ -53,7 +53,8 @@ namespace PetApi.Controllers
             return NotFound();
         }
 
-        public IActionResult ModifyPetPrice(string name, PetPriceChangeDto priceChange)
+        [HttpPatch("{name}")]
+        public IActionResult ModifyPetPrice([FromRoute]string name, [FromBody]PetPriceChangeDto priceChange)
         {
             var pet = _petService.ModifyPetPrice(name, priceChange);
             if (pet == null)

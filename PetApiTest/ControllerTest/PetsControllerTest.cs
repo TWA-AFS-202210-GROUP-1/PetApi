@@ -21,7 +21,6 @@ public class PetsControllerTest
         var httpClient = app.CreateClient();
 
         var pet = new Pet("TestTom", PetType.Cat, "blue", 150);
-
         //when
         var response = await httpClient.PostAsJsonAsync("api/pets", pet);
         var responseContentString = await response.Content.ReadAsStringAsync();
