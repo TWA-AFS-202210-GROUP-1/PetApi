@@ -242,5 +242,45 @@ namespace PetApi.Controllers
             var pets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
             Assert.Equal(insertpets, pets);
         }
+
+        [Fact]
+        public async void Should_get_all_pets_with_the_color_white()
+        {
+            //given
+            var application = new WebApplicationFactory<Program>();
+            var httpClient = application.CreateClient();
+            /*
+             * Method: GET
+             * URI: /api/getAllPets
+             * Body:
+             * {
+             *  "name: "Kitty",
+             *  "type":"cat",
+             *  "color":"white",
+             *  "price": 1000
+             * }
+             */
+            var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: "1000");
+            var serializeObject = JsonConvert.SerializeObject(pet);
+            var postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            await httpClient.PostAsync("/api/addNewPet", postBody);
+            List<Pet> insertpets = new List<Pet>();
+            insertpets.Add(pet);
+            pet = new Pet(name: "Tom", type: "cat", color: "blue", price: "15000");
+            serializeObject = JsonConvert.SerializeObject(pet);
+            postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            await httpClient.PostAsync("/api/addNewPet", postBody);
+            pet = new Pet(name: "Jerry", type: "mouse", color: "orange", price: "1500");
+            serializeObject = JsonConvert.SerializeObject(pet);
+            postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            await httpClient.PostAsync("/api/addNewPet", postBody);
+            //when
+            var response = await httpClient.GetAsync("api/getPetByColor/?color=white");
+            //then
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var pets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            Assert.Equal(insertpets, pets);
+        }
     }
 }

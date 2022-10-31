@@ -97,5 +97,20 @@ namespace PetApi.Controllers
 
             return pet_results;
         }
+
+        [HttpGet("getPetByColor")]
+        public List<Pet> GetPetByColor([FromQuery] string color)
+        {
+            List<Pet> pet_results = new List<Pet>();
+            for (int i = 0; i < pets.Count; i++)
+            {
+                if (pets[i].Color == color)
+                {
+                    pet_results.Add(pets[i]);
+                }
+            }
+
+            return pet_results;
+        }
     }
 }
