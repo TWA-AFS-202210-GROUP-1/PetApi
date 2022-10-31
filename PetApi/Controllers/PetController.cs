@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetApi.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,6 +41,12 @@ namespace PetApi.Controllers
     public Pet FindPetByColor([FromQuery] string color)
     {
       return pets.First(pet => pet.Color.Equals(color));
+    }
+
+    [HttpGet("findPetByPriceRange/priceFrom{start}to{end}")]
+    public Pet FindPetByPriceRange([FromRoute] int start, [FromRoute] int end)
+    {
+      return pets.First(pet => pet.Price >= start && pet.Price <= end);
     }
 
     [HttpPut("changePetProperty")]

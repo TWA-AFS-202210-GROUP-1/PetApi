@@ -7,6 +7,7 @@ using PetApi.Model;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System;
 
 namespace PetApiTest.ControllerTest;
 
@@ -104,7 +105,6 @@ public class PetControllerTest
     var serializedNewPetObject = JsonConvert.SerializeObject(newPet);
     var newPostBody = new StringContent(serializedNewPetObject, Encoding.UTF8, "application/json");
     // when
-    var response1 = await httpClient.GetAsync($"/api/findPetByName?name={newPet.Name}");
     var response = await httpClient.PutAsync($"/api/changePetProperty?name={newPet.Name}", newPostBody);
     // then
     response.EnsureSuccessStatusCode();
@@ -146,6 +146,26 @@ public class PetControllerTest
     await httpClient.PostAsync("/api/addNewPet", postBody);
     // when
     var response = await httpClient.GetAsync($"/api/findPetByColor?color={pet.Color}");
+    // then
+    response.EnsureSuccessStatusCode();
+    var responseBody = await response.Content.ReadAsStringAsync();
+    var returnedPet = JsonConvert.DeserializeObject<Pet>(responseBody);
+    Assert.Equal(pet, returnedPet);
+  }
+
+  [Fact]
+  public async void Should_get_pet_by_price_range_from_system_successfully()
+  {
+    // given
+    var application = new WebApplicationFactory<Program>();
+    var httpClient = application.CreateClient();
+    await httpClient.DeleteAsync("/api/deleteAllPets");
+    var pet = new Pet("Kitty", "cat", "white", 1000);
+    var serializedObject = JsonConvert.SerializeObject(pet);
+    var postBody = new StringContent(serializedObject, Encoding.UTF8, "application/json");
+    await httpClient.PostAsync("/api/addNewPet", postBody);
+    // when
+    var response = await httpClient.GetAsync($"/api/findPetByPriceRange/priceFrom0to2000");
     // then
     response.EnsureSuccessStatusCode();
     var responseBody = await response.Content.ReadAsStringAsync();
