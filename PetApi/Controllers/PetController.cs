@@ -51,5 +51,20 @@ namespace PetApi.Controllers
 
             return pets;
         }
+
+        [HttpPut("changePetPrice")]
+        public Pet ChangePetprice(Pet pet)
+        {
+            for (int i = 0; i < pets.Count; i++)
+            {
+                if (pets[i].Name == pet.Name && pets[i].Type == pet.Type && pets[i].Color == pet.Color)
+                {
+                    pets[i].Price = pet.Price;
+                    return pets[i];
+                }
+            }
+
+            return null;
+        }
     }
 }

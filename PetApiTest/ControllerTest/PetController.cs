@@ -119,13 +119,46 @@ namespace PetApi.Controllers
             var postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             await httpClient.PostAsync("/api/addNewPet", postBody);
             //when
-            var response = await httpClient.DeleteAsync("api/DeletePet/?name=Kitty&type=cat&color=white&price=1000");
+            var response = await httpClient.DeleteAsync("api/deletePet/?name=Kitty&type=cat&color=white&price=1000");
             //then
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
-            var petsnow = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+            var pets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
             List<Pet> emptypets = new List<Pet>();
-            Assert.Equal(emptypets, petsnow);
+            Assert.Equal(emptypets, pets);
+        }
+
+        [Fact]
+        public async void Should_modify_the_price()
+        {
+            //given
+            var application = new WebApplicationFactory<Program>();
+            var httpClient = application.CreateClient();
+            /*
+             * Method: GET
+             * URI: /api/getAllPets
+             * Body:
+             * {
+             *  "name: "Kitty",
+             *  "type":"cat",
+             *  "color":"white",
+             *  "price": 1000
+             * }
+             */
+            var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: "1000");
+            var serializeObject = JsonConvert.SerializeObject(pet);
+            var postBody = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            await httpClient.PostAsync("/api/addNewPet", postBody);
+            //when
+            var pet1 = new Pet(name: "Kitty", type: "cat", color: "white", price: "500");
+            var serializeObject1 = JsonConvert.SerializeObject(pet1);
+            var postBody1 = new StringContent(serializeObject1, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync("api/changePetPrice/", postBody1);
+            //then
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var changedpet = JsonConvert.DeserializeObject<Pet>(responseBody);
+            Assert.Equal("500", changedpet.Price);
         }
     }
 }
