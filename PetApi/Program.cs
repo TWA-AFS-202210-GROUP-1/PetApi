@@ -28,6 +28,9 @@ app.MapControllers();
 
 app.Run();
 
+/// <summary>
+/// Partial class Program.
+/// </summary>
 public partial class Program
 {
 }
