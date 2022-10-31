@@ -30,10 +30,16 @@ namespace PetApi.Controllers
       return pets.First(pet => pet.Name.Equals(name));
     }
 
-    [HttpGet("findPetByName")]
+    [HttpGet("findPetByType")]
     public Pet FindPetByType([FromQuery] string type)
     {
       return pets.First(pet => pet.Type.Equals(type));
+    }
+
+    [HttpGet("findPetByColor")]
+    public Pet FindPetByColor([FromQuery] string color)
+    {
+      return pets.First(pet => pet.Color.Equals(color));
     }
 
     [HttpPut("changePetProperty")]
