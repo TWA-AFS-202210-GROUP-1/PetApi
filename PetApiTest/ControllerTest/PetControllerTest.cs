@@ -20,15 +20,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
         var serializeObject = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
@@ -46,15 +37,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
         var serializeObject = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
@@ -73,15 +55,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
         var serializeObject = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
@@ -103,15 +76,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
         var serializeObject = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
@@ -128,23 +92,13 @@ public class PetControllerTest
         //given
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
-        await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
         var serializeObject = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
         await httpClient.PostAsync(requestUri: "/api/addNewPet", postBody);
         //when
         var updatedPet = new Pet(name: "Kitty", type: "cat", color: "white", price: 700);
-        var updatePetserializeObject = JsonConvert.SerializeObject(pet);
+        var updatePetserializeObject = JsonConvert.SerializeObject(up);
         var updatedPostBody = new StringContent(updatePetserializeObject, Encoding.UTF8, mediaType: "application/json");
         var response = await httpClient.PutAsync(requestUri: "/api/updatePetByName", updatedPostBody);
         //then
@@ -158,15 +112,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         List<Pet> pets = new List<Pet>()
         {
             new Pet(name: "Kitty", type: "cat", color: "white", price: 1000),
@@ -197,15 +142,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         List<Pet> pets = new List<Pet>()
         {
             new Pet(name: "Kitty", type: "cat", color: "white", price: 1000),
@@ -236,15 +172,6 @@ public class PetControllerTest
         var application = new WebApplicationFactory<Program>();
         var httpClient = application.CreateClient();
         await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
-        /*
-         * Method: post
-         * uri: /api/addNewPet
-         * body:{
-         * "name": "Kitty",
-         * "type": "cat",
-         * "color" : "white",
-         * "price": 1000}
-         */
         List<Pet> pets = new List<Pet>()
         {
             new Pet(name: "Kitty", type: "cat", color: "white", price: 1000),
