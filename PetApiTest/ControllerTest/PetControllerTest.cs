@@ -228,4 +228,44 @@ public class PetControllerTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(500, res[0].Price);
     }
+
+    [Fact]
+    public async void Should_get_pets_of_system_by_color_successfully()
+    {
+        //given
+        var application = new WebApplicationFactory<Program>();
+        var httpClient = application.CreateClient();
+        await httpClient.DeleteAsync(requestUri: "/api/deleteAllPets");
+        /*
+         * Method: post
+         * uri: /api/addNewPet
+         * body:{
+         * "name": "Kitty",
+         * "type": "cat",
+         * "color" : "white",
+         * "price": 1000}
+         */
+        List<Pet> pets = new List<Pet>()
+        {
+            new Pet(name: "Kitty", type: "cat", color: "white", price: 1000),
+            new Pet(name: "Mini", type: "dog", color: "black", price: 500),
+            new Pet(name: "Haha", type: "dog", color: "white", price: 800),
+        };
+        foreach (var pet in pets)
+        {
+            var serializeObject = JsonConvert.SerializeObject(pet);
+            var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
+            await httpClient.PostAsync(requestUri: "/api/addNewPet", postBody);
+        }
+
+        //when
+        var response = await httpClient.GetAsync(requestUri: "api/findPetsByColor?color=white");
+        //then
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        var res = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("Kitty", res[0].Name);
+        Assert.Equal("Haha", res[1].Name);
+    }
 }

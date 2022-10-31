@@ -100,5 +100,19 @@ namespace PetApi.Controllers
                 return Ok(targetPets);
             }
         }
+
+        [HttpGet("findPetsByColor")]
+        public IActionResult FindPetsByColor([FromQuery] string color)
+        {
+            List<Pet> targetPets = pets.FindAll(i => i.Color == color);
+            if (targetPets.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(targetPets);
+            }
+        }
     }
 }
