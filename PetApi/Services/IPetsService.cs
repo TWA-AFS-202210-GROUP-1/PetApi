@@ -10,4 +10,6 @@ public interface IPetsService
     public Pet? GetByName(string name);
     public bool DeleteByName(string name);
     public Pet? ModifyPetPrice(string name, PetPriceChangeDto priceChange);
+    public IList<Pet>? GetByType(PetType name);
+    public IList<Pet>? GetByPriceRange(double from, double to);
 }

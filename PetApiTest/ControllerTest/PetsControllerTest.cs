@@ -20,7 +20,7 @@ public class PetsControllerTest
         var app = new WebApplicationFactory<Program>();
         var httpClient = app.CreateClient();
 
-        var pet = new Pet("TestTom", PetType.Cat, "blue", 150);
+        var pet = new Pet("TestTom", PetType.Dog, "blue", 150);
         //when
         var response = await httpClient.PostAsJsonAsync("api/pets", pet);
         var responseContentString = await response.Content.ReadAsStringAsync();
@@ -122,5 +122,39 @@ public class PetsControllerTest
 
         //then
         Assert.True(result is ObjectResult);
+    }
+
+    [Fact]
+    public async void Should_return_all_cat_when_get_by_type_given_cat()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+
+        //when
+        var response = await httpClient.GetAsync($"api/pets/type/{nameof(PetType.Cat)}");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
+
+        //then
+        Assert.Single(responseContent);
+        Assert.Equal("Tom", responseContent[0].Name);
+    }
+
+    [Fact]
+    public async void Should_return_1_pet_when_get_by_priceRange_given_80_110()
+    {
+        //given
+        var app = new WebApplicationFactory<Program>();
+        var httpClient = app.CreateClient();
+
+        //when
+        var response = await httpClient.GetAsync($"api/pets/price/from/80/to/100");
+        var responseContentString = await response.Content.ReadAsStringAsync();
+        var responseContent = JsonConvert.DeserializeObject<List<Pet>>(responseContentString);
+
+        //then
+        Assert.Single(responseContent);
+        Assert.Equal("Spike", responseContent[0].Name);
     }
 }

@@ -13,7 +13,7 @@ namespace PetApi.Services
             _pets = new List<Pet>()
             {
                 new ("Spike", PetType.Dog, "white", 100),
-                new ("Tom", PetType.Cat, "blue", 100),
+                new ("Tom", PetType.Cat, "blue", 150),
             };
         }
 
@@ -53,6 +53,16 @@ namespace PetApi.Services
             }
 
             return pet;
+        }
+
+        public IList<Pet> GetByType(PetType type)
+        {
+            return _pets.Where(_ => _.Type == type).ToList();
+        }
+
+        public IList<Pet>? GetByPriceRange(double from, double to)
+        {
+            return _pets.Where(_ => _.Price <= to && _.Price >= from).ToList();
         }
     }
 }

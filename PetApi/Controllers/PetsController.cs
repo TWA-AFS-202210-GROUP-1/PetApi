@@ -22,7 +22,7 @@ namespace PetApi.Controllers
             return Created($"api/pets?name={createdPet.Name}", createdPet);
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public IActionResult GetAll()
         {
             var pets = _petService.GetAllPets();
@@ -30,7 +30,7 @@ namespace PetApi.Controllers
         }
 
         [HttpGet("{name}")]
-        public IActionResult GetByName([FromQuery]string name)
+        public IActionResult GetByName([FromRoute]string name)
         {
             var pet = _petService.GetByName(name);
             if (pet == null)
@@ -62,6 +62,20 @@ namespace PetApi.Controllers
                 return NotFound();
             }
 
+            return Ok(pet);
+        }
+
+        [HttpGet("type/{type}")]
+        public IActionResult GetByType([FromRoute] PetType type)
+        {
+            var pet = _petService.GetByType(type);
+            return Ok(pet);
+        }
+
+        [HttpGet("price/from/{from}/to/{to}")]
+        public IActionResult GetByPriceRange([FromRoute] double from, [FromRoute] double to)
+        {
+            var pet = _petService.GetByPriceRange(from, to);
             return Ok(pet);
         }
     }
