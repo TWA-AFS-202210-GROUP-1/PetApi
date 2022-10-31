@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PetApi.Controllers;
+using System;
 using System.Collections.Generic;
 
 namespace PetApi.Controllers
@@ -74,6 +75,21 @@ namespace PetApi.Controllers
             for (int i = 0; i < pets.Count; i++)
             {
                 if (pets[i].Type == type)
+                {
+                    pet_results.Add(pets[i]);
+                }
+            }
+
+            return pet_results;
+        }
+
+        [HttpGet("getPetByPriceRange")]
+        public List<Pet> GetPetByPriceRange([FromQuery] string lowprice, string highprice)
+        {
+            List<Pet> pet_results = new List<Pet>();
+            for (int i = 0; i < pets.Count; i++)
+            {
+                if (Convert.ToDouble(pets[i].Price) < Convert.ToDouble(highprice) && Convert.ToDouble(pets[i].Price) >= Convert.ToDouble(lowprice))
                 {
                     pet_results.Add(pets[i]);
                 }
