@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PetApi.Model;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PetApi.Controllers
 {
@@ -16,10 +18,16 @@ namespace PetApi.Controllers
             return pet;
         }
 
-        [HttpGet("getAllPets")]
-        public List<Pet> GetAllPets()
+        [HttpGet("findPetByName")]
+        public Pet FindPetByName([FromQuery] string name)
         {
-            return pets;
+            return pets.FirstOrDefault(pet => pet.Name == name);
+        }
+
+        [HttpDelete("deleteAllPets")]
+        public void DeleteAllPets([FromQuery] string name)
+        {
+            pets.Clear();
         }
 
     }

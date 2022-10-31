@@ -64,4 +64,32 @@ public class PetControllerTest
         var allPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
         Assert.Equal(pet, allPets[0]);
     }
+
+    [Fact]
+    public async void Should_get_pet_of_system_by_name_successfully()
+    {
+        //given
+        var application = new WebApplicationFactory<Program>();
+        var httpClient = application.CreateClient();
+        /*
+         * Method: post
+         * uri: /api/addNewPet
+         * body:{
+         * "name": "Kitty",
+         * "type": "cat",
+         * "color" : "white",
+         * "price": 1000}
+         */
+        var pet = new Pet(name: "Kitty", type: "cat", color: "white", price: 1000);
+        var serializeObject = JsonConvert.SerializeObject(pet);
+        var postBody = new StringContent(serializeObject, Encoding.UTF8, mediaType: "application/json");
+        await httpClient.PostAsync(requestUri: "/api/addNewPet", postBody);
+        //when
+        var repsonse = await httpClient.GetAsync(requestUri: "api/findPetByName?Name=Kitty");
+        //then
+        repsonse.EnsureSuccessStatusCode();
+        var responseBody = await repsonse.Content.ReadAsStringAsync();
+        var targetPet = JsonConvert.DeserializeObject<Pet>(responseBody);
+        Assert.Equal(pet, targetPet);
+    }
 }
