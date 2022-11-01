@@ -57,14 +57,13 @@ public class PetControllerTest
         var serializeObjectPet = JsonConvert.SerializeObject(pet);
         var postBody = new StringContent(serializeObjectPet, Encoding.UTF8, "application/json");
         await httpClient.PostAsync("/api/addNewPet", postBody);
-        await httpClient.PostAsync("/api/addNewPet", postBody);
         //when
         var response = await httpClient.GetAsync("/api/getAllPets");
         // then
         response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
         var allPets = JsonConvert.DeserializeObject<List<Pet>>(responseBody);
-        Assert.Equal(pet, allPets[1]);
+        Assert.Equal(pet, allPets[0]);
     }
 
     [Fact]
@@ -212,7 +211,7 @@ public class PetControllerTest
         var priceRange = new List<int>() { 900, 1000 };
         var serializeObjectPriceRange = JsonConvert.SerializeObject(priceRange);
         var postBodyKitty = new StringContent(serializeObjectPriceRange, Encoding.UTF8, "application/json");
-        var responseMessage = await httpClient.GetAsync("/api/findPetsByPriceRange/900_1000");
+        var responseMessage = await httpClient.GetAsync("/api/findPetsByPriceRange?minPrice=900&&maxPrice=1000");
 
         // then
         var findPets = new List<Pet>()
@@ -250,8 +249,8 @@ public class PetControllerTest
 
         // when
         var priceRange = new List<int>() { 900, 1000 };
-        var serializeObjectPriceRange = JsonConvert.SerializeObject(priceRange);
-        var postBodyKitty = new StringContent(serializeObjectPriceRange, Encoding.UTF8, "application/json");
+        var serializeObject = JsonConvert.SerializeObject(priceRange);
+        var postBodyKitty = new StringContent(serializeObject, Encoding.UTF8, "application/json");
         var responseMessage = await httpClient.GetAsync("/api/findPetsByColor?Color=yellow");
 
         // then

@@ -69,8 +69,8 @@ namespace PetApi.Controllers
             return findPets.Count == 0 ? null : findPets;
         }
 
-        [HttpGet("findPetsByPriceRange/{minPrice}_{maxPrice}")]
-        public List<Pet>? FindPetsByPriceRange([FromRoute] int minPrice, [FromRoute] int maxPrice)
+        [HttpGet("findPetsByPriceRange")]
+        public List<Pet>? FindPetsByPriceRange([FromQuery] int minPrice, [FromQuery] int maxPrice)
         {
             var findPetsByPriceRange = pets.FindAll(pet => pet.Price <= maxPrice && pet.Price >= minPrice);
             return findPetsByPriceRange.Count == 0 ? null : findPetsByPriceRange;
